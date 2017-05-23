@@ -2,11 +2,10 @@
 
 
 import argparse
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import sys
 import mlb
 import mlb_database
-import os
 
 
 def parse_args():
@@ -17,7 +16,7 @@ def parse_args():
         prog='mlbpool',
         description='mlb pool app to get current team stats (wins vs losses)'
     )
-    parser.add_argument('-d', '--date', dest='cmd_date',
+    parser.add_argument('-d', '--date', dest='cmd_date', default=None,
                         help='Specify date you want to see stats\
                         for "example: YYYYMMDD"'
                        )
@@ -27,16 +26,21 @@ def parse_args():
     return args
 
 
-def validate_date(date):
+def validate_date(gameday):
     """
     Ensure date is a acceptable valid date
     """
     try:
-        date = datetime.strptime(date, "%Y%M%d")
+        if gameday is not None:
+            gameday = datetime.strptime(gameday, "%Y%M%d")
+        else:
+            gameday = date.today() - timedelta(0)
+            gameday = gameday.strftime('%Y%m%d')
     except ValueError:
         msg = "Incorrect data format, should be YYYYMMDD or YYYYMMD"
         sys.exit(msg)
-    return date.strftime("%Y%M%d")
+
+    return gameday
 
 
 def get_mlb_date(valid_date):
@@ -60,7 +64,7 @@ def main():
     game_date = get_mlb_date(validate_date(args.cmd_date))
     mlb_data = mlb.MLBData(game_date)
     mlb_data.get_scoreboard(mlb_data.get_url())
-    print mlb_database.MLB_DB()._db_conn.close()
+    mlb_database.MLB_DB()._db_conn.close()
 
 
 

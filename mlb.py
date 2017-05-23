@@ -45,11 +45,8 @@ class MLBData(object):
         team_score = {}
         for k, v in data.items():
             if 'linescore' in k:
-                print [data['home_team_id']], v['r']['home']
-                print [data['away_team_id']], v['r']['away']
                 team_score[data['home_team_id']] = v['r']['home']
                 team_score[data['away_team_id']] = v['r']['away']
-        print team_score
         mlb_database.MLB_DB().add_score(team_score)
 
     def parse_scoreboard(self, data):

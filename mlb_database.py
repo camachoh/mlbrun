@@ -63,7 +63,6 @@ class MLB_DB(object):
                 try:
                     self._db_cur.execute(sql_cmd)
                     self._db_conn.commit()
-                    #self._db_conn.close()
                 except sqlite3.Error as er:
                     print er
 
